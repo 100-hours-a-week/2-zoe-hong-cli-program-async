@@ -77,4 +77,5 @@
 
 ## 프로그램 시연
 택시를 탑승하기로 선택한 시점부터
+
 ![시연 영상](https://github.com/user-attachments/assets/aa35ffd3-6b25-4374-8cf0-7a2cbbca19b2)
