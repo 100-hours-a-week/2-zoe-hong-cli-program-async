@@ -12,7 +12,7 @@ public class Script {
         try {
             for (String s : text) {
                 System.out.println(s);
-                Thread.sleep(500);
+                Thread.sleep(100);
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();

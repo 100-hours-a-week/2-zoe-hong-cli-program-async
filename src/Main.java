@@ -1,4 +1,5 @@
 import Script.*;
+import TaxiCall.TaxiCall;
 import Transportation.Bus;
 import Transportation.Taxi;
 import Transportation.Walk;
@@ -25,6 +26,7 @@ public class Main {
 
         // 1.걸어갈 것인가, 2.대중교통을 탈 것인가?
         ScriptChoice1 sc1 = new ScriptChoice1();
+
         switch(sc1.inputWalkOrVehicle()) {
             case WALK:
                 sc1.typingWalking();
@@ -40,6 +42,11 @@ public class Main {
                         break;
                     case TAXI:
                         sc2.typingTaxi();
+
+                        // 스레드 상호작용 추가
+                        TaxiCall tc = new TaxiCall();
+                        tc.TaxiCallRace();
+
                         se.ending(taxi);
                         break;
                 }
