@@ -9,6 +9,7 @@ public class TaxiThread implements Runnable {
         int OFF = -1;   // 퇴근 상태
     }
     public final static int NO_CUSTOMER = -1;
+    public final static int WAITING_COUNT = 5;
     private final AtomicInteger currentState = new AtomicInteger(taxiState.UNABLE);
     private final AtomicInteger customerId = new AtomicInteger(NO_CUSTOMER);
     private int drivingTime = NO_CUSTOMER;
@@ -20,20 +21,32 @@ public class TaxiThread implements Runnable {
     }
 
     public void run() {
-        while (workCount > 0) {
+        while (currentState.get() != taxiState.OFF) {
             callingTaxi();
+            if (currentState.get() == taxiState.OFF) { break; }
+
             drivingTaxi();
+            if (workCount <= 0) {
+                currentState.set(TaxiThread.taxiState.OFF);
+            }
         }
-        // 퇴근
-        currentState.set(TaxiThread.taxiState.OFF);
     }
 
     private void callingTaxi() {
-        // 대기 상태: 호출 시도가 들어올 때까지
-        while (customerId.get() == NO_CUSTOMER) {
+        // 대기 상태
+        // 1. 호출 시도가 들어올 때까지
+        // 2. 일정 대기 시간이 지나기 전까지
+        int waitFlag = WAITING_COUNT;
+        while (customerId.get() == NO_CUSTOMER && currentState.get() != taxiState.OFF) {
             if (currentState.get() == taxiState.UNABLE) {
                 currentState.set(taxiState.ABLE);
             }
+            waitFlag--;
+            if (waitFlag <= 0) {
+                currentState.set(taxiState.OFF);
+                System.out.println("🚕💨 택시가 손님을 찾지 못했습니다. 업무를 종료합니다.");
+            }
+            sleep();
         }
     }
 
@@ -41,7 +54,7 @@ public class TaxiThread implements Runnable {
         // 운전(UNABLE): 4초 동안
         // 운전이 완료하면 탑승 카운트를 감소한다.
         while (customerId.get() != NO_CUSTOMER) {
-            if (drivingTime < 4) {
+            if (drivingTime < 3) {
                 System.out.println("🚖[" + customerId + ": 승차] 운전 중입니다.");
                 drivingTime++;
                 sleep();
